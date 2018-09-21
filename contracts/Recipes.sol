@@ -39,14 +39,16 @@ contract Recipes {
     }
 
     function addRecipe(string hash, string recipeType, string origin, uint amount) public {
-        recipes[recipeIndexes.length].owner = msg.sender;
-        recipes[recipeIndexes.length].ipfsHash = hash;
-        recipes[recipeIndexes.length].index = recipeIndexes.length;
-        recipes[recipeIndexes.length].recipeType = recipeType;
-        recipes[recipeIndexes.length].origin = origin;
-        recipes[recipeIndexes.length].timeCreated = now;
-        recipes[recipeIndexes.length].etherAmount = amount * (10 ** 18);
-        recipes[recipeIndexes.length].allowedToView[msg.sender] = true;
+        Recipe storage recipe = recipes[recipeIndexes.length];
+        recipe.owner = msg.sender;
+        recipe.ipfsHash = hash;
+        recipe.index = recipeIndexes.length;
+        recipe.recipeType = recipeType;
+        recipe.origin = origin;
+        recipe.timeCreated = now;
+        recipe.etherAmount = amount * (10 ** 18);
+        recipe.allowedToView[msg.sender] = true;
+        recipes[recipeIndexes.length] = recipe;
         recipeIndexes.push(recipeIndexes.length);
     }
 
