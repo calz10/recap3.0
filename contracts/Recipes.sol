@@ -80,15 +80,35 @@ contract Recipes {
         return recipeIndexes.length;
     }
 
+    modifier userTransactionIndexExist(uint index) {
+        require(index < usersTransactions[msg.sender].length, "Index doesnt exist");
+        _;
+    }
+
+    function getUserTransactions(uint _index) public view userTransactionIndexExist(_index) 
+        returns (address owner, string ipfsHash, string recipeType, uint timeCreated, string origin, uint amount) 
+    {
+        Recipe memory recipe = recipes[_index];
+        return (
+            recipe.owner,
+            recipe.ipfsHash,
+            recipe.recipeType,
+            recipe.timeCreated,
+            recipe.origin,
+            recipe.etherAmount
+        );
+    }
+
     function getSpecificIndexRecipe(uint index) public view indexExist(index) 
-    returns(address owner, string ipfsHash, string recipeType, uint timeCreated, string origin) 
+    returns(address owner, string ipfsHash, string recipeType, uint timeCreated, string origin, uint amount) 
     {
         return (
             recipes[index].owner,
             recipes[index].ipfsHash,
             recipes[index].recipeType,
             recipes[index].timeCreated,
-            recipes[index].origin
+            recipes[index].origin,
+            recipes[index].etherAmount
         );
     }
 
