@@ -29,7 +29,12 @@ contract Recipes {
         _;
     }
 
-    function isAllowedToView(uint recipeIndex)  public view returns (bool) { 
+    modifier isEqualAmount(uint index) {
+        require(recipes[index].etherAmount == msg.value, "Amount is not the same");
+        _; 
+    }
+
+    function isAllowedToView(uint recipeIndex)  public view indexExist(recipeIndex) returns (bool) { 
         bytes32 restrictedKey = keccak256("payable");
         bytes32 dataType = keccak256(recipes[recipeIndex].recipeType);
         if (restrictedKey == dataType) {
@@ -38,7 +43,7 @@ contract Recipes {
         return true;
     }
 
-    function buySubscription(uint _index) public indexExist(_index) payable {
+    function buySubscription(uint _index) public indexExist(_index) isEqualAmount(_index) payable {
         allowUserToView(_index);
         address ownerAddress =  recipes[_index].owner;
         balances[ownerAddress] += msg.value; 
@@ -61,7 +66,7 @@ contract Recipes {
         recipes[recipeIndexes.length].recipeType = recipeType;
         recipes[recipeIndexes.length].origin = origin;
         recipes[recipeIndexes.length].timeCreated = now;
-        recipes[recipeIndexes.length].etherAmount = amount;
+        recipes[recipeIndexes.length].etherAmount = amount * (10 ** 18);
         recipes[recipeIndexes.length].allowedToView[msg.sender] = true;
         recipeIndexes.push(recipeIndexes.length);
     }

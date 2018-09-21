@@ -13,7 +13,7 @@ contract("Recipes", async (accounts) => {
     });
     
     it("should add item and increase the recipe size contract to one", async () => {
-        await recipeInstance.addRecipe('testHash','free', 'Philippines',{ from: accounts[0] })
+        await recipeInstance.addRecipe('testHash','free', 'Philippines',1, { from: accounts[0] })
 
         const recipesLength = await recipeInstance.getRecipeCount() || 0;
         assert.equal(recipesLength, 1 , 'The recipe count of contract should be now 1 value');
@@ -29,7 +29,7 @@ contract("Recipes", async (accounts) => {
 
     it('should test the type of recipe', async() => {
         
-        await recipeInstance.addRecipe('testHash2','payable', 'Philippines',{ from: accounts[0] })
+        await recipeInstance.addRecipe('testHash2','payable', 'Philippines',1,{ from: accounts[0] })
         const [_, _x,recipeType] = await recipeInstance.getSpecificIndexRecipe(1)
         assert.equal(recipeType, 'payable', 'is equal to payable')
     })
@@ -46,9 +46,9 @@ contract("Recipes", async (accounts) => {
     })
 
     it('should register multiple recipe and get count with current count of 5', async() => {
-        await recipeInstance.addRecipe('testHash3','payable', 'Philippines',{ from: accounts[0] })
-        await recipeInstance.addRecipe('testHash4','payable', 'Philippines',{ from: accounts[0] })
-        await recipeInstance.addRecipe('testHash5','payable', 'Philippines',{ from: accounts[0] })
+        await recipeInstance.addRecipe('testHash3','payable', 'Philippines',1, { from: accounts[0] })
+        await recipeInstance.addRecipe('testHash4','payable', 'Philippines',1, { from: accounts[0] })
+        await recipeInstance.addRecipe('testHash5','payable', 'Philippines',1, { from: accounts[0] })
         const count = await recipeInstance.getRecipeCount()
         assert.equal(count, 5, 'count is not equal with expected count')
     })
@@ -65,7 +65,7 @@ contract("Recipes", async (accounts) => {
     })
 
     it('should allow adding after deleting value at element', async() => {
-        await recipeInstance.addRecipe('testHash6','payable', 'Philippines',{ from: accounts[0] })
+        await recipeInstance.addRecipe('testHash6','payable', 'Philippines',1, { from: accounts[0] })
         const count = await recipeInstance.getRecipeCount()
         assert.equal(count, 5, 'count is not equal with expected count')
     })
