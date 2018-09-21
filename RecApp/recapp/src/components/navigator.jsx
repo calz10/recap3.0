@@ -6,6 +6,7 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
+  Button,
   NavLink,
  } from 'reactstrap';
  import { observer, inject} from 'mobx-react'
@@ -30,7 +31,8 @@ class Navigator extends Component {
       isOpen: false
     };
   }
-  async componentDidMount(){
+
+  async authenticate() {
     try {
       const result = await this.props.store.authStore.login({password: 'pass',email: 'pass',repassword:'pass'})
       console.log(`Login user: ${result.firstname}`)
@@ -45,6 +47,7 @@ class Navigator extends Component {
     });
   }
   render() {
+    const { isAuthenticated } = this.props.store.authStore
     return (
       <div>
         <Navbar color="light" light expand="sm">
@@ -58,12 +61,15 @@ class Navigator extends Component {
               <NavItem style={styles.navItem}>
                 <Link  to="/components/" style={styles.linkItem}>Town</Link>
               </NavItem>
+            {isAuthenticated &&
               <NavItem style={styles.navItem}>
                 <Link to="/components/" style={styles.linkItem}>GWA_PERTA</Link>
               </NavItem>
+            }
             </Nav>
           </Collapse>
         </Navbar>
+        <Button onClick={() => this.authenticate()}>Test</Button>
       </div>
     );
   }
