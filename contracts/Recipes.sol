@@ -12,11 +12,11 @@ contract Recipes {
         mapping ( address => bool) allowedToView;
     }
 
-    uint[] recipeIndexes;
     mapping(uint => Recipe) recipes;
     mapping (address => uint) balances;
     mapping ( address => Recipe[]) usersTransactions;
     
+    uint[] recipeIndexes;
     address private owner;
 
     modifier isRecipeOwner(uint _index) {
@@ -38,8 +38,20 @@ contract Recipes {
         return true;
     }
 
-    function buySubscription() {
-        
+    function buySubscription(uint _index) public indexExist(_index) payable {
+        allowUserToView(_index);
+        address ownerAddress =  recipes[_index].owner;
+        balances[ownerAddress] += msg.value; 
+    }
+
+    function getBalance() public view returns(uint balance) {
+        return balances[msg.sender];
+    } 
+
+    function cashOut() public {
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        msg.sender.transfer(amount);
     }
 
     function addRecipe(string hash, string recipeType, string origin, uint amount) public {
@@ -56,6 +68,7 @@ contract Recipes {
 
     function allowUserToView(uint recipeIndex) public {
         recipes[recipeIndex].allowedToView[msg.sender] = true;
+        usersTransactions[msg.sender].push(recipes[recipeIndex]);
     }
 
     function getRecipeCount() public view returns(uint) {
