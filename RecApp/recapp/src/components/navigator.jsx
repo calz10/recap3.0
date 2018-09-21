@@ -8,6 +8,7 @@ import {
   NavItem,
   NavLink,
  } from 'reactstrap';
+ import { observer, inject} from 'mobx-react'
 import { Link } from 'react-router-dom'
 const styles = {
   navItem: {
@@ -17,15 +18,27 @@ const styles = {
     color: 'black'
   }
 }
+
+@inject('store')
+@observer
+
 class Navigator extends Component {
   constructor(props) {
     super(props);
-
     this.toggle = this.toggle.bind(this);
     this.state = {
       isOpen: false
     };
   }
+  async componentDidMount(){
+    try {
+      const result = await this.props.store.authStore.login({password: 'pass',email: 'pass',repassword:'pass'})
+      console.log(`Login user: ${result.firstname}`)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
