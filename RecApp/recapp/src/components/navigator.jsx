@@ -11,6 +11,7 @@ import {
  } from 'reactstrap';
  import { observer, inject} from 'mobx-react'
 import { Link } from 'react-router-dom'
+
 const styles = {
   navItem: {
     padding: '8px',
@@ -46,6 +47,7 @@ class Navigator extends Component {
       isOpen: !this.state.isOpen
     });
   }
+
   render() {
     const { isAuthenticated } = this.props.store.authStore
     return (
