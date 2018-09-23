@@ -6,15 +6,11 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  Button,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  NavLink,
+  Button
 } from 'reactstrap';
 import { observer, inject } from 'mobx-react'
 import { Link, withRouter } from 'react-router-dom'
+import { firebase } from '../firebase'
 
 const styles = {
   navItem: {
@@ -28,7 +24,7 @@ const styles = {
   }
 }
 
-@inject('store')
+@inject('stores')
 @observer
 class Navigator extends Component {
   constructor(props) {
@@ -39,26 +35,18 @@ class Navigator extends Component {
     };
   }
 
-  async authenticate() {
-    try {
-      const result = await this.props.store.authStore.login({ password: 'pass', email: 'pass', repassword: 'pass' })
-      console.log(`Login user: ${result.firstname}`)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
-    });
+    })
   }
 
   logout() {
-    this.props.store.authStore.logout()
-    this.props.history.push('/')
+    this.props.stores.authStore.changeAuth()
+    firebase.auth().signOut()
   }
   render() {
+    const { authStore } = this.props.stores
     return (
       <div>
         <Navbar style={styles.navBar} light expand="md">
@@ -66,15 +54,21 @@ class Navigator extends Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              <NavItem style={styles.navItem}>
-                <Link style={styles.linkItem} to="/">Home</Link>
-              </NavItem>
-              <NavItem style={styles.navItem}>
-                <Link style={styles.linkItem} to="/account-creation">Create Account</Link>
-              </NavItem>
-              <NavItem style={styles.navItem} onClick={() => this.logout()}>
-                <h6>Logout</h6>
-              </NavItem>
+              {!authStore.isAuthenticated &&
+                <NavItem style={styles.navItem}>
+                  <Link style={styles.linkItem} to="/">Home</Link>
+                </NavItem>
+              }
+              {!authStore.isAuthenticated &&
+                <NavItem style={styles.navItem}>
+                  <Link style={styles.linkItem} to="/account-creation">Create Account</Link>
+                </NavItem>
+              }
+              {authStore.isAuthenticated &&
+                <NavItem style={styles.navItem} onClick={() => this.logout()} >
+                  <Button  color='link' style={{color: 'black'}} onClick={() => this.logout()}> Logout</Button>
+                </NavItem>
+              }
             </Nav>
           </Collapse>
         </Navbar>

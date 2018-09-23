@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navigator from './components/navigator'
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Switch } from 'react-router-dom'
 import { firebase } from './firebase'
 import Home from './components/smart/Home'
 import Signup from './components/smart/SignupContainer'
@@ -39,7 +39,7 @@ class App extends Component {
     return (
       <div sty={{ position: 'fixed', top: 0, backgroundColor: 'red', heigth: '100%', width: '100%' }}>
         <Router>
-          <Provider store={new RootStore()}>
+          <Provider stores={new RootStore()}>
             <div>
               <Navigator />
               <div style={styles.bodyDiv}>

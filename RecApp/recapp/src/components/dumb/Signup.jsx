@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, FormGroup, Input, Label, FormFeedback, Button, InputGroup, InputGroupAddon } from 'reactstrap'
+import { Form, FormGroup, Input, Label, Button } from 'reactstrap'
 
 const styles = {
   form: {
@@ -43,7 +43,7 @@ const SignUp = props => (
       />
     </FormGroup>
     <FormGroup>
-      <Button onClick={props.createUser}> Create Account</Button>
+      <Button onClick={() => props.createUser()}> Create Account</Button>
     </FormGroup>
   </Form>
 )

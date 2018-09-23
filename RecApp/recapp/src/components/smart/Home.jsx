@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from 'reactstrap';
 import { inject, observer } from 'mobx-react'
-// import Client from '../../models/Client'
-// import Wallet from '../../models/Wallet'
-import Signup from '../dumb/Signup'
 import Login from '../dumb/Login'
 
 
@@ -27,7 +23,7 @@ const styles = {
   }
 }
 
-@inject('store')
+@inject('stores')
 @observer
 class Home extends Component {
   constructor(props) {
@@ -36,7 +32,6 @@ class Home extends Component {
     this.handleChangeText = this.handleChangeText.bind(this)
     this.login = this.login.bind(this)
   }
-
   // async openFromMnemonic() {
   //   const defaultMnemonic = "wave tortoise supreme lecture gold obvious flee goose toast ghost depend visual"
   //   const { clientStore } = this.props.store
@@ -54,15 +49,15 @@ class Home extends Component {
   }
 
   login() {
-    this.props.store.authStore.login(this.state)
+    this.props.stores.authStore.login(this.state)
   }
   async getWalletBalance() { }
-  
+
   render() {
     return (
       <div style={styles.outerForm}>
         <div style={styles.signup}>
-          <Login 
+          <Login
             handleChangeText={this.handleChangeText}
             values={this.state}
             login={this.login}

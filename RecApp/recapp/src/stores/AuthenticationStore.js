@@ -18,10 +18,8 @@ class AuthenticationStore {
 
   @action createNewUser(data) {
     try {
-      console.log(data)
       const result = this.authApi.createUser(data)
       this.currentUser = result
-      console.log(result, 'inside me')
       return result
     } catch (error) {
       return error
@@ -32,25 +30,36 @@ class AuthenticationStore {
     this.currentUser = user
   }
 
+  @action changeAuth(boolean) {
+    if (boolean) {
+      this.isAuthenticated = boolean
+    } else {
+      this.isAuthenticated = !this.isAuthenticated
+      this.currentUser = null
+    }
+  }
+
   @action async login(authData) {
     const { email, password } = authData
     try {
       const result = await this.authApi.login(email, password)
-      if(result) {
+      if (result) {
         this.currentUser = await this.authApi.getUserById(result.user.uid)
-        console.log(this.currentUser.fullname, 'full')
         this.isAuthenticated = true
+        return this.currentUser
       }
-      return this.currentUser
     }
     catch (error) {
       return error
     }
   }
 
-  @action logout() {
-    this.authApi.logout()
-  }
+  // @action logout() {
+  //   this.authApi.logout()
+  //   this.isAuthenticated = false
+  //   this.currentUser = null;
+  //   console.log(this.isAuthenticated)
+  // }
 }
 
 export default AuthenticationStore

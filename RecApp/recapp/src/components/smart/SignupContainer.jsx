@@ -23,7 +23,7 @@ const styles = {
   }
 }
 
-@inject('store')
+@inject('stores')
 @observer
 class SignupContainer extends Component {
   constructor(props) {
@@ -38,8 +38,7 @@ class SignupContainer extends Component {
   }
   
   async createUser() {
-    const data = this.props.store.authStore.createNewUser(this.state)
-    console.log(data, 'output')
+    await this.props.stores.authStore.createNewUser(this.state)
   }
 
   render() {

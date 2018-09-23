@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import { Button } from 'reactstrap';
 import { inject, observer } from 'mobx-react'
+import { firebase } from '../../firebase'
 
-@inject('store')
+@inject('stores')
 @observer
 class Dashboard extends Component {
-  // constructor(props) {
-  //   super(props)
-  // }
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.props.stores.authStore.changeAuth(true)
+      } else {
+        this.props.stores.authStore.changeAuth()
+      }
+    })
+  }
 
   render() {
     return (
