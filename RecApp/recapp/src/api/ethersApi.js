@@ -1,5 +1,7 @@
 import ethers from 'ethers'
 
-const provider = ethers.providers.getDefaultProvider('ropsten')
+const providers = ethers.providers;
+const network = providers.networks.ropsten;
+const provider = new providers.InfuraProvider(network);
 
 export { provider , ethers }
