@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Collapse,
   Navbar,
@@ -7,10 +7,14 @@ import {
   Nav,
   NavItem,
   Button,
+  DropdownItem,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
   NavLink,
- } from 'reactstrap';
- import { observer, inject} from 'mobx-react'
-import { Link } from 'react-router-dom'
+} from 'reactstrap';
+import { observer, inject } from 'mobx-react'
+import { Link, withRouter } from 'react-router-dom'
 
 const styles = {
   navItem: {
@@ -18,12 +22,14 @@ const styles = {
   },
   linkItem: {
     color: 'black'
+  },
+  navBar: {
+    backgroundColor: '#FFE0B2'
   }
 }
 
 @inject('store')
 @observer
-
 class Navigator extends Component {
   constructor(props) {
     super(props);
@@ -35,7 +41,7 @@ class Navigator extends Component {
 
   async authenticate() {
     try {
-      const result = await this.props.store.authStore.login({password: 'pass',email: 'pass',repassword:'pass'})
+      const result = await this.props.store.authStore.login({ password: 'pass', email: 'pass', repassword: 'pass' })
       console.log(`Login user: ${result.firstname}`)
     } catch (error) {
       console.log(error)
@@ -48,33 +54,33 @@ class Navigator extends Component {
     });
   }
 
+  logout() {
+    this.props.store.authStore.logout()
+    this.props.history.push('/')
+  }
   render() {
-    const { isAuthenticated } = this.props.store.authStore
     return (
       <div>
-        <Navbar color="light" light expand="sm">
-          <NavbarBrand href="/">RecApp3.0</NavbarBrand>
+        <Navbar style={styles.navBar} light expand="md">
+          <NavbarBrand disabled>RecApp3.0</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem style={styles.navItem}>
-                <Link to="/" style={styles.linkItem}>Home</Link>
+                <Link style={styles.linkItem} to="/">Home</Link>
               </NavItem>
               <NavItem style={styles.navItem}>
-                <Link  to="/components/" style={styles.linkItem}>Town</Link>
+                <Link style={styles.linkItem} to="/account-creation">Create Account</Link>
               </NavItem>
-            {isAuthenticated &&
-              <NavItem style={styles.navItem}>
-                <Link to="/components/" style={styles.linkItem}>GWA_PERTA</Link>
+              <NavItem style={styles.navItem} onClick={() => this.logout()}>
+                <h6>Logout</h6>
               </NavItem>
-            }
             </Nav>
           </Collapse>
         </Navbar>
-        <Button onClick={() => this.authenticate()}>Test</Button>
       </div>
     );
   }
 }
 
-export default Navigator
+export default withRouter(Navigator)

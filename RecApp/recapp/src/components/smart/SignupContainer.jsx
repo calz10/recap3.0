@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
-import { Button } from 'reactstrap';
 import { inject, observer } from 'mobx-react'
-// import Client from '../../models/Client'
-// import Wallet from '../../models/Wallet'
 import Signup from '../dumb/Signup'
-import Login from '../dumb/Login'
 
 
 const styles = {
@@ -15,7 +11,7 @@ const styles = {
     justifyItems: 'center',
     flexDirection: 'column',
     backgroundColor: '#FFFDE7',
-    width: '40%',
+    width: '50%',
     margin: '2%',
     border: '1px solid #FFCC80',
     borderRadius: '5px'
@@ -29,43 +25,31 @@ const styles = {
 
 @inject('store')
 @observer
-class Home extends Component {
+class SignupContainer extends Component {
   constructor(props) {
     super(props)
     this.state = {}
     this.handleChangeText = this.handleChangeText.bind(this)
-    this.login = this.login.bind(this)
+    this.createUser = this.createUser.bind(this)
   }
-
-  // async openFromMnemonic() {
-  //   const defaultMnemonic = "wave tortoise supreme lecture gold obvious flee goose toast ghost depend visual"
-  //   const { clientStore } = this.props.store
-  //   try {
-  //     await clientStore.loadWalletFromMnemonic(defaultMnemonic)
-  //     console.log(clientStore.currentWalletBalance, 'updated test')
-  //   } catch (error) {
-  //     return error
-  //   }
-  // }
-
   handleChangeText(evt) {
     const { id, value } = evt.target
     this.setState({ [id]: value })
   }
-
-  login() {
-    this.props.store.authStore.login(this.state)
-  }
-  async getWalletBalance() { }
   
+  async createUser() {
+    const data = this.props.store.authStore.createNewUser(this.state)
+    console.log(data, 'output')
+  }
+
   render() {
     return (
       <div style={styles.outerForm}>
         <div style={styles.signup}>
-          <Login 
-            handleChangeText={this.handleChangeText}
+          <Signup
             values={this.state}
-            login={this.login}
+            handleChangeText={this.handleChangeText}
+            createUser={this.createUser}
           />
         </div>
       </div>
@@ -73,4 +57,4 @@ class Home extends Component {
   }
 }
 
-export default Home
+export default SignupContainer
