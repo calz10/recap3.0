@@ -4,6 +4,7 @@ import {
   // computed
 } from 'mobx'
 import * as Api from '../api'
+import helpers from '../helpers/index'
 
 const Wallet = Api.Wallet
 const EtheriumClient = Api.EtheriumClient
@@ -36,7 +37,6 @@ class ClientStore {
   @action async loadWalletFromMnemonic(mnemonic) {
     try {
       this.wallet = EtheriumClient.openFromMnemonic(mnemonic)
-      console.log(this.wallet)
       this.currentWalletBalance = await this.getWalletBalance(this.wallet.address)
     } catch (error) {
       return error
@@ -51,7 +51,9 @@ class ClientStore {
       throw new Error('Problem occur either in your wallet or password!')
     }
   }
-
+  @action decryptMnemonic(data, password) {
+    return helpers.decryptFromSecure(data, password)
+  }
   @action async decryptWallet(jsonWallet, password) {
     if(jsonWallet && password) {
       return await EtheriumClient.decryptWallet(jsonWallet, password)

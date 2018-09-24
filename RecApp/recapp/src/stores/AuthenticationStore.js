@@ -4,7 +4,8 @@ import {
   // computed
 } from 'mobx'
 import * as Api from '../api'
-
+import helpers from '../helpers/index'
+import crypto from 'crypto-js'
 class AuthenticationStore {
   @observable isAuthenticated = false
   @observable currentUser = null
@@ -58,12 +59,24 @@ class AuthenticationStore {
     return await this.authApi.getUserById(id)
   }
 
-  // @action logout() {
-  //   this.authApi.logout()
-  //   this.isAuthenticated = false
-  //   this.currentUser = null;
-  //   console.log(this.isAuthenticated)
-  // }
+  @action async saveWalletMnemonic(auth) {
+    const { confirmPassword, password } = auth
+    const currentWallet = this.rootStore.clientStore.wallet
+    if (confirmPassword !== password) {
+      throw new Error('Mismatch password')
+    }
+    if (currentWallet) {
+      const { wallet } = currentWallet
+      const encryptedMnemonic = helpers.encryptToSecure(wallet.mnemonic, password).toString()
+      try {
+        await this.authApi.updateUserData(this.currentUser.id, { encryptedMnemonic, savedMnemonic: true })
+        this.currentUser = { ...this.currentUser, savedMnemonic: true }
+      } catch (error) {
+        return error
+      }
+      return encryptedMnemonic
+    }
+  }
 }
 
 export default AuthenticationStore

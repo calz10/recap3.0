@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react'
 import Modal from '../dumb/Modal'
 import { Button, Container, Row, Col, Alert, Jumbotron, InputGroup, Input, InputGroupAddon } from 'reactstrap'
-import Steppers from 'react-stepzilla'
+import { withRouter } from 'react-router-dom'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-
+import ConfirmPassword from '../dumb/ConfirmPassword'
 
 const styles = {
   noWalletDiv: {
@@ -27,13 +27,16 @@ class CreateWallet extends Component {
       copied: false,
       inputText: '',
       typeChangeCount: 0,
-      errorMessage: false
+      errorMessage: false,
+      arrivedToLastSteps: false,
     }
     this.toggle = this.toggle.bind(this)
     // this.goToNext = this.goToNext.bind(this)
     this.copy = this.copy.bind(this)
     this.changeText = this.changeText.bind(this)
     this.save = this.save.bind(this)
+    this.handleChangeText = this.handleChangeText.bind(this)
+    this.saveWallet = this.saveWallet.bind(this)
   }
 
   toggle() {
@@ -51,11 +54,14 @@ class CreateWallet extends Component {
   }
 
   save() {
+    const generatedWallet = this.props.stores.clientStore.wallet
     if (this.state.inputText) {
       if (this.state.typeChangeCount < this.state.inputText.length) {
         this.setState({ errorMessage: true, inputText: '', typeChangeCount: 0 })
       } else {
-
+        if (this.state.inputText === generatedWallet.wallet.mnemonic) {
+          this.setState({ arrivedToLastSteps: true })
+        }
       }
     } else {
       this.setState({ errorMessage: true })
@@ -75,12 +81,33 @@ class CreateWallet extends Component {
     }
   }
 
+  handleChangeText(evt) {
+    const { id, value } = evt.target
+    this.setState({ [id]: value })
+  }
+
+  async saveWallet() {
+    try {
+      const { password, confirmPassword } = this.state
+      if(password && confirmPassword) {
+        await this.props.stores.authStore.saveWalletMnemonic({ password, confirmPassword })
+        this.props.history.push('/')
+      }
+    } catch (error) {
+      return error
+    }
+  }
 
   generateLayout() {
     const hasSaveMnemonics = this.state.saveMnemonics
     const generatedWallet = this.props.stores.clientStore.wallet
+    const { password, confirmPassword } = this.state
+    const values = {
+      password,
+      confirmPassword
+    }
 
-    if (!hasSaveMnemonics && !generatedWallet) {
+    if (!hasSaveMnemonics && !generatedWallet && !this.state.arrivedToLastSteps) {
       return (
         <Row>
           <Col style={styles.noWalletDiv}>
@@ -90,7 +117,7 @@ class CreateWallet extends Component {
           </Col>
         </Row>
       )
-    } else if (generatedWallet && !this.state.copied) {
+    } else if (generatedWallet && !this.state.copied && !this.state.arrivedToLastSteps) {
       return (
         <Row>
           <Col style={styles.noWalletDiv}>
@@ -105,7 +132,7 @@ class CreateWallet extends Component {
           </Col>
         </Row>
       )
-    } else if (generatedWallet && this.state.copied) {
+    } else if (generatedWallet && this.state.copied && !this.state.arrivedToLastSteps) {
       return (<Row>
         <Col style={styles.noWalletDiv}>
           <InputGroup style={{ width: '70%' }} >
@@ -116,6 +143,14 @@ class CreateWallet extends Component {
           </InputGroup>
         </Col>
       </Row>)
+    } else if (this.state.arrivedToLastSteps) {
+      return (
+        <ConfirmPassword
+          handleChangeText={this.handleChangeText}
+          values={values}
+          saveWallet={this.saveWallet}
+        />
+      )
     }
   }
 
@@ -127,7 +162,7 @@ class CreateWallet extends Component {
       <div>
         <Container style={{ height: '80%', marginTop: '5%' }}>
           <Jumbotron style={{ backgroundColor: 'rgb(0,0,0,0.1)', border: '1px solid #FFCC80' }}>
-            {this.props.stores.clientStore.wallet &&
+            {this.props.stores.clientStore.wallet && !this.state.arrivedToLastSteps &&
               <div style={styles.noWalletDiv}>
                 <Alert color={this.state.errorMessage ? 'danger' : 'warning'} style={{ width: '60%', ...styles.noWalletDiv }}>
                   {text}
@@ -142,4 +177,4 @@ class CreateWallet extends Component {
   }
 }
 
-export default CreateWallet
+export default withRouter(CreateWallet)
