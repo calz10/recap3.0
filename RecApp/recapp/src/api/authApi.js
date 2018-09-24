@@ -16,8 +16,8 @@ export const authentication = {
       const result = await auth.createUserWithEmailAndPassword(email, password)
       let values = {
         ...rest,
-        savedMnemonics: false,
-        encryptedMnenmonics: ''
+        savedMnemonic: false,
+        encryptedMnemonic: ''
       }
       await databaseCollection('users').doc(result.user.uid).set(values)
     } catch (error) {
@@ -31,6 +31,14 @@ export const authentication = {
         return { id, ...docRef.data() }
       }
       return null
+    } catch (error) {
+      return error
+    }
+  },
+  updateUserData: async(id, data) => {
+    try {
+      const result = await databaseCollection('users').doc(id).update(data)
+      return result
     } catch (error) {
       return error
     }
