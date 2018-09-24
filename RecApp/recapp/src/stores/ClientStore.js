@@ -23,6 +23,7 @@ class ClientStore {
     try {
       this.wallet = new Wallet(privateKey)
       this.currentWalletBalance = await this.getWalletBalance()
+      return this.wallet
     } catch (error) {
       return error
     }
@@ -35,6 +36,7 @@ class ClientStore {
   @action async loadWalletFromMnemonic(mnemonic) {
     try {
       this.wallet = EtheriumClient.openFromMnemonic(mnemonic)
+      console.log(this.wallet)
       this.currentWalletBalance = await this.getWalletBalance(this.wallet.address)
     } catch (error) {
       return error

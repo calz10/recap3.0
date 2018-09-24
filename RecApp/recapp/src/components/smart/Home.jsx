@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react'
 import Login from '../dumb/Login'
+import { Button } from 'reactstrap'
 
 
 const styles = {
@@ -32,16 +33,16 @@ class Home extends Component {
     this.handleChangeText = this.handleChangeText.bind(this)
     this.login = this.login.bind(this)
   }
-  // async openFromMnemonic() {
-  //   const defaultMnemonic = "wave tortoise supreme lecture gold obvious flee goose toast ghost depend visual"
-  //   const { clientStore } = this.props.store
-  //   try {
-  //     await clientStore.loadWalletFromMnemonic(defaultMnemonic)
-  //     console.log(clientStore.currentWalletBalance, 'updated test')
-  //   } catch (error) {
-  //     return error
-  //   }
-  // }
+  async openFromMnemonic() {
+    const defaultMnemonic = "wave tortoise supreme lecture gold obvious flee goose toast ghost depend visual"
+    const { clientStore } = this.props.stores
+    try {
+      await clientStore.loadWalletFromMnemonic(defaultMnemonic)
+      console.log(clientStore.currentWalletBalance, 'updated test')
+    } catch (error) {
+      return error
+    }
+  }
 
   handleChangeText(evt) {
     const { id, value } = evt.target
@@ -63,6 +64,7 @@ class Home extends Component {
             login={this.login}
           />
         </div>
+        {/* <Button onClick={()=> this.openFromMnemonic()}> tes</Button> */}
       </div>
     );
   }

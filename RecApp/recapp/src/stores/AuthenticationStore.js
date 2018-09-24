@@ -26,8 +26,9 @@ class AuthenticationStore {
     }
   }
 
-  @action setUser(user) {
-    this.currentUser = user
+  @action async setUser(user) {
+    this.currentUser = await this.getUserById(user.uid)
+    this.isAuthenticated = true;
   }
 
   @action changeAuth(boolean) {
@@ -44,14 +45,17 @@ class AuthenticationStore {
     try {
       const result = await this.authApi.login(email, password)
       if (result) {
-        this.currentUser = await this.authApi.getUserById(result.user.uid)
-        this.isAuthenticated = true
+        this.currentUser = await this.getUserById(result.user.uid)
         return this.currentUser
       }
     }
     catch (error) {
       return error
     }
+  }
+
+  @action async getUserById(id) {
+    return await this.authApi.getUserById(id)
   }
 
   // @action logout() {
