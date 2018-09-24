@@ -6,6 +6,8 @@ import Home from './components/smart/Home'
 import Signup from './components/smart/SignupContainer'
 import Dashboard from './components/smart/Dashboard'
 import CreateWallet from './components/smart/CreateWallet'
+import Profile from './components/smart/Profile'
+
 
 import ProtectedRoute from './ProtectedRoute'
 import ModifiedRoute from './ModifiedRoute'
@@ -50,6 +52,7 @@ class App extends Component {
                   <ModifiedRoute path='/account-creation' component={Signup} user={this.state.user} />
                   <ProtectedRoute path='/create-wallet' component={CreateWallet} user={this.state.user} />                 
                   <ProtectedRoute path='/dashboard' component={Dashboard} user={this.state.user} />
+                  <ProtectedRoute path='/profile' component={Profile} user={this.state.user} />
                 </Switch>
               </div>
             </div>

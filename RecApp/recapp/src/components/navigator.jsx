@@ -75,9 +75,10 @@ class Navigator extends Component {
       try {
         const mnemonic = clientStore.decryptMnemonic(authStore.currentUser.encryptedMnemonic, this.state.password)
         await clientStore.loadWalletFromMnemonic(mnemonic)
+        this.props.history.push('/profile')
         this.setState({openModal: false})
       } catch (error) {
-        throw new error(error)
+        return error
       }
     }
   }
@@ -103,9 +104,11 @@ class Navigator extends Component {
                 </NavItem>
               }
               {authStore.isAuthenticated &&
-                // <NavItem style={styles.navItem} onClick={() => this.logout()} >
-                //   <Button color='link' style={{ color: 'black' }} onClick={() => this.logout()}> Logout</Button>
-                // </NavItem>
+                <NavItem style={styles.navItem}>
+                  <Link style={styles.linkItem} to="/dashboard">Dashboard</Link>
+                </NavItem>
+              }
+              {authStore.isAuthenticated &&
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret >
                     {this.props.stores.authStore.currentUser.fullname}
@@ -120,6 +123,11 @@ class Navigator extends Component {
                       <DropdownItem onClick={this.openModal}>
                         Open Wallet
                       </DropdownItem>
+                    }
+                    {wallet &&
+                         <DropdownItem>
+                         <Link to='/profile'>Wallet && Profile</Link>
+                       </DropdownItem>
                     }
                     <DropdownItem onClick={() => this.logout()}>
                       Log out
