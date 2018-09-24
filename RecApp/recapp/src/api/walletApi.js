@@ -12,9 +12,9 @@ export class Wallet {
 
   async getBalance(address) {
     if (!address) {
-      return this.getFormatedBalance(this.wallet.address)
+      return await this.getFormatedBalance(this.wallet.address)
     }
-    return this.getFormatedBalance(address)
+    return await this.getFormatedBalance(address)
   }
   
   async getFormatedBalance(address) {

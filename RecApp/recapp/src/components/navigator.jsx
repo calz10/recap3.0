@@ -6,7 +6,12 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  Button
+  // UncontrolledButtonDropdown
+  Button,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from 'reactstrap';
 import { observer, inject } from 'mobx-react'
 import { Link, withRouter } from 'react-router-dom'
@@ -50,7 +55,7 @@ class Navigator extends Component {
     return (
       <div>
         <Navbar style={styles.navBar} light expand="md">
-          <NavbarBrand disabled>RecApp3.0</NavbarBrand>
+          <NavbarBrand disabled>RECAPP</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
@@ -65,9 +70,22 @@ class Navigator extends Component {
                 </NavItem>
               }
               {authStore.isAuthenticated &&
-                <NavItem style={styles.navItem} onClick={() => this.logout()} >
-                  <Button  color='link' style={{color: 'black'}} onClick={() => this.logout()}> Logout</Button>
-                </NavItem>
+                // <NavItem style={styles.navItem} onClick={() => this.logout()} >
+                //   <Button color='link' style={{ color: 'black' }} onClick={() => this.logout()}> Logout</Button>
+                // </NavItem>
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret >
+                    Settings
+                  </DropdownToggle>
+                  <DropdownMenu right>
+                    <DropdownItem>
+                      <Link to='/create-wallet'>Generate Wallet</Link>
+                    </DropdownItem>
+                    <DropdownItem onClick={() => this.logout()}>
+                      Log out
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
               }
             </Nav>
           </Collapse>
