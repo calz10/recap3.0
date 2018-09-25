@@ -36,7 +36,7 @@ class SignupContainer extends Component {
     const { id, value } = evt.target
     this.setState({ [id]: value })
   }
-  
+ 
   async createUser() {
     await this.props.stores.authStore.createNewUser(this.state)
   }

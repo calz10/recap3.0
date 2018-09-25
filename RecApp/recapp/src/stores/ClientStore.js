@@ -38,6 +38,7 @@ class ClientStore {
     try {
       this.wallet = EtheriumClient.openFromMnemonic(mnemonic)
       this.currentWalletBalance = await this.getWalletBalance(this.wallet.address)
+      this.rootStore.recipeStore.setContract()
     } catch (error) {
       return error
     }
@@ -51,6 +52,7 @@ class ClientStore {
       throw new Error('Problem occur either in your wallet or password!')
     }
   }
+  
   @action decryptMnemonic(data, password) {
     return helpers.decryptFromSecure(data, password)
   }

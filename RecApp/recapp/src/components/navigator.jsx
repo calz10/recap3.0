@@ -109,6 +109,11 @@ class Navigator extends Component {
                 </NavItem>
               }
               {authStore.isAuthenticated &&
+                <NavItem style={styles.navItem}>
+                  <Link style={styles.linkItem} to="/upload-recipe">Upload Recipe</Link>
+                </NavItem>
+              }
+              {authStore.isAuthenticated &&
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret >
                     {this.props.stores.authStore.currentUser.fullname}

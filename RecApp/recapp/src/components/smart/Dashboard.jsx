@@ -7,6 +7,12 @@ import Modal from '../dumb/Modal'
 @inject('stores')
 @observer
 class Dashboard extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { count: 0 }
+    this.test = this.test.bind(this)
+    this.getData = this.getData.bind(this)
+  }
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -17,11 +23,32 @@ class Dashboard extends Component {
     })
   }
 
+  async test() {
+    const count = await this.props.stores.recipeStore.getRecipeCount()
+    console.log(count.toNumber(), 'test')
+    // this.setState({ count })
+  }
+  async getData() {
+    const [owner, ipfsHash, recipeType, timeCreated, origin] = await this.props.stores.recipeStore.getRecipeAtIndex(1)
+    const data = { owner, ipfsHash, recipeType, timeCreated: timeCreated.toNumber(), origin }
+    this.setState({ data })
+  }
+
   render() {
     return (
       <div>
-        <h1>test me luck</h1>
-        <Modal />
+        <h1>{this.state.count}</h1>
+        {this.state.data &&
+          < div >
+            <p>Hash: {this.state.data.ipfsHash}</p>
+            <p>Origin: {this.state.data.origin}</p>
+            <p>type: {this.state.data.recipeType}</p>
+          </div>
+        }
+
+        <Button onClick={this.test}>Test</Button>
+        <Button onClick={this.getData}>Get Data 1</Button>
+
       </div>
     );
   }
