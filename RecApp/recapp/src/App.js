@@ -7,6 +7,8 @@ import Signup from './components/smart/SignupContainer'
 import Dashboard from './components/smart/Dashboard'
 import CreateWallet from './components/smart/CreateWallet'
 import Profile from './components/smart/Profile'
+import Upload from './components/smart/UploadRecipe'
+
 
 
 import ProtectedRoute from './ProtectedRoute'
@@ -53,6 +55,7 @@ class App extends Component {
                   <ProtectedRoute path='/create-wallet' component={CreateWallet} user={this.state.user} />                 
                   <ProtectedRoute path='/dashboard' component={Dashboard} user={this.state.user} />
                   <ProtectedRoute path='/profile' component={Profile} user={this.state.user} />
+                  <ProtectedRoute path='/upload-recipe' component={Upload} user={this.state.user} />                
                 </Switch>
               </div>
             </div>

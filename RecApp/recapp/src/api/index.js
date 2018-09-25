@@ -1,4 +1,5 @@
 export { authentication } from './authApi'
-export { ipfs } from './ipfsApi'
+export { ipfs ,OperatorIPFS} from './ipfsApi'
 export { EtheriumClient } from './etheriumCientApi'
 export { Wallet } from './walletApi'
+export { ContractAPI } from './contractApi'
