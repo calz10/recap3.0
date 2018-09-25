@@ -1,16 +1,28 @@
 export const abi =[
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "getBalance",
-		"outputs": [
+		"constant": false,
+		"inputs": [
 			{
-				"name": "balance",
+				"name": "hash",
+				"type": "string"
+			},
+			{
+				"name": "recipeType",
+				"type": "string"
+			},
+			{
+				"name": "origin",
+				"type": "string"
+			},
+			{
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
+		"name": "addRecipe",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -29,11 +41,53 @@ export const abi =[
 	},
 	{
 		"constant": false,
+		"inputs": [
+			{
+				"name": "_index",
+				"type": "uint256"
+			}
+		],
+		"name": "buySubscription",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
 		"inputs": [],
 		"name": "cashOut",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "deleteIndex",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"name": "balance",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -54,15 +108,15 @@ export const abi =[
 		"constant": true,
 		"inputs": [
 			{
-				"name": "recipeIndex",
+				"name": "index",
 				"type": "uint256"
 			}
 		],
-		"name": "isAllowedToView",
+		"name": "getRecipeIndexesAt",
 		"outputs": [
 			{
 				"name": "",
-				"type": "bool"
+				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -109,53 +163,6 @@ export const abi =[
 		"type": "function"
 	},
 	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_index",
-				"type": "uint256"
-			}
-		],
-		"name": "buySubscription",
-		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "getRecipeIndexesAt",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "deleteIndex",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"constant": true,
 		"inputs": [
 			{
@@ -195,31 +202,24 @@ export const abi =[
 		"type": "function"
 	},
 	{
-		"constant": false,
+		"constant": true,
 		"inputs": [
 			{
-				"name": "hash",
-				"type": "string"
-			},
-			{
-				"name": "recipeType",
-				"type": "string"
-			},
-			{
-				"name": "origin",
-				"type": "string"
-			},
-			{
-				"name": "amount",
+				"name": "recipeIndex",
 				"type": "uint256"
 			}
 		],
-		"name": "addRecipe",
-		"outputs": [],
+		"name": "isAllowedToView",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
 		"payable": false,
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	}
 ]
 
-export const address = '0x799a4ff4b5b52b61861690f5b003d50ae20b43cb'
+export const address = '0xc3fad5a28ce287455548bb4d1f844f900512297d'

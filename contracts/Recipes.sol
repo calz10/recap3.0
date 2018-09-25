@@ -123,7 +123,7 @@ contract Recipes {
     function getUserTransactions(uint _index) public view userTransactionIndexExist(_index) 
         returns (address owner, string ipfsHash, string recipeType, uint timeCreated, string origin, uint amount) 
     {
-        Recipe memory recipe = recipes[_index];
+        Recipe memory recipe = usersTransactions[msg.sender][_index];
         return (
             recipe.owner,
             recipe.ipfsHash,
