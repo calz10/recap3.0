@@ -62,6 +62,8 @@ class Dashboard extends Component {
 
   }
   getRecipes() {
+    const userWallet = this.props.stores.clientStore.wallet
+    console.log(userWallet, 'test')
     if (this.state.data.length) {
       return this.state.data.map((item) => {
         return (
@@ -71,6 +73,8 @@ class Dashboard extends Component {
               title={item.title}
               description={item.description}
               recipeType={item.recipeType}
+              owner = {item.owner}
+              userAddress = {userWallet ? userWallet.address: '0x'}
             />
           </Col>
         )
@@ -101,7 +105,7 @@ class Dashboard extends Component {
           </Col>
         </Row>
         {this.state.data &&
-          <Row style={{ height: '800px', overflowY: 'auto' }}>
+          <Row style={{ height: '700px', overflowY: 'auto' }}>
             {this.state.data.length > 0 &&
               this.getRecipes()
             }
