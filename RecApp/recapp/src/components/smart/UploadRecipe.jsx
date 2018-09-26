@@ -55,7 +55,7 @@ class UploadRecipe extends Component {
       const ipfsHash = await this.props.stores.recipeStore.upload(buff)
       const data = {
         ipfsHash,
-        type: 'payable',
+        type: 'free',
         origin: 'Philippines',
         amount: 1
       }
