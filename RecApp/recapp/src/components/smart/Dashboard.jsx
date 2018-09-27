@@ -19,20 +19,26 @@ class Dashboard extends Component {
     super(props)
     this.state = { count: 0, data: [], dropdownOpen: false }
     this.test = this.test.bind(this)
-    this.getData = this.getData.bind(this)
+    // this.getData = this.getData.bind(this)
     this.toggle = this.toggle.bind(this);
     this.removeRecipe = this.removeRecipe.bind(this)
     this.buyRecipe = this.buyRecipe.bind(this)
+    this.viewRecipe = this.viewRecipe.bind(this)
   }
-  componentDidMount() {
+  async componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.props.stores.authStore.setUser(user)
-        this.getData()
       } else {
         this.props.stores.authStore.changeAuth()
       }
     })
+    if (this.props.stores.recipeStore.wallet) {
+      this.props.stores.recipeStore.viewContractWalletBalance()
+    }
+    if (!this.props.stores.recipeStore.hasRetrieved) {
+      await this.props.stores.recipeStore.getData()
+    }
   }
 
   toggle() {
@@ -41,48 +47,22 @@ class Dashboard extends Component {
     }));
   }
 
-  // async buyItem(index) {
-  //   console.log(book)
-  // }
-
   async test() {
-    const count = await this.props.stores.recipeStore.getRecipeCount()
-    this.setState({ count: count.toNumber() })
+    const data = await this.props.stores.recipeStore.viewContractWalletBalance()
+    console.log(data)
   }
 
-
-  async getData() {
-    try {
-      const count = await this.props.stores.recipeStore.getRecipeCount()
-      let data = []
-      const number = count.toNumber()
-      for (let index = 0; index < number; index++) {
-        const [owner, ipfsHash, recipeType, timeCreated, origin, amount] = await this.props.stores.recipeStore.getRecipeAtIndex(index)
-        let isAllowed = false
-        if (recipeType === 'payable' && this.props.stores.clientStore.wallet) {
-          isAllowed = await this.props.stores.recipeStore.isAllowedToViewPayableRecipe(index)
-        }
-
-        if(recipeType === 'free') {
-          isAllowed = true
-        }
-        const ipfsObject = await axios.get(`https://gateway.ipfs.io/ipfs/${ipfsHash}`)
-        const ethAmount = ethers.utils.formatEther(amount)
-        const value = { owner, ipfsHash, isAllowed, recipeType, timeCreated: timeCreated.toNumber(), ethAmount, origin, ...ipfsObject.data }
-        // console.log(isAllowed, 'this is test', recipeType, index)
-        data.push(value)
-      }
-      this.setState({ data })
-    } catch (error) {
-      return new Error('Error message')
-    }
+  viewRecipe(recipe) {
+    this.props.stores.clientStore.setSelectedRecipe(recipe)
+    this.props.history.push('/view-recipe')
   }
 
   async removeRecipe(index) {
-    const result = await this.props.stores.recipeStore.removeRecipe(index)
-    if (result) {
-      const data = this.state.data.filter((item, i) => i !== index)
-      this.setState({ data })
+    try {
+      const result = await this.props.stores.recipeStore.removeRecipe(index)
+      console.log(result)
+    } catch (error) {
+      return error
     }
   }
 
@@ -102,8 +82,8 @@ class Dashboard extends Component {
 
   getRecipes() {
     const userWallet = this.props.stores.clientStore.wallet
-    if (this.state.data.length) {
-      return this.state.data.map((item, i) => {
+    if (this.props.stores.recipeStore.data.length) {
+      return this.props.stores.recipeStore.data.map((item, i) => {
         return (
           <Col md={4} style={styles.recipeItem} key={i}>
             <RecipeItem
@@ -119,6 +99,8 @@ class Dashboard extends Component {
               buy={this.buyRecipe}
               hasWallet={userWallet ? true : false}
               buyRecipe={this.buyRecipe}
+              recipe={item}
+              viewRecipe={this.viewRecipe}
               userAddress={userWallet ? userWallet.address : '0x'}
             />
           </Col>
@@ -141,7 +123,7 @@ class Dashboard extends Component {
                 Filter By Country
               </DropdownToggle>
               <DropdownMenu >
-                <DropdownItem>Philippines</DropdownItem>
+                <DropdownItem>{this.props.stores.recipeStore.contractBalance}</DropdownItem>
                 <DropdownItem>Africa</DropdownItem>
                 <DropdownItem>Bulgaria</DropdownItem>
               </DropdownMenu>
@@ -150,7 +132,7 @@ class Dashboard extends Component {
         </Row>
         {this.state.data &&
           <Row style={{ height: '700px', overflowY: 'auto' }}>
-            {this.state.data.length > 0 &&
+            {
               this.getRecipes()
             }
           </Row>

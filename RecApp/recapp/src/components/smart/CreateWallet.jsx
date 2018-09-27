@@ -59,7 +59,7 @@ class CreateWallet extends Component {
       if (this.state.typeChangeCount < this.state.inputText.length) {
         this.setState({ errorMessage: true, inputText: '', typeChangeCount: 0 })
       } else {
-        if (this.state.inputText === generatedWallet.wallet.mnemonic) {
+        if (this.state.inputText === generatedWallet.mnemonic) {
           this.setState({ arrivedToLastSteps: true })
         }
       }
@@ -89,10 +89,12 @@ class CreateWallet extends Component {
   async saveWallet() {
     try {
       const { password, confirmPassword } = this.state
-      if(password && confirmPassword) {
+      if (password && confirmPassword) {
+        console.log('suld')
         await this.props.stores.authStore.saveWalletMnemonic({ password, confirmPassword })
         this.props.history.push('/')
       }
+      console.log(password, confirmPassword)
     } catch (error) {
       return error
     }
@@ -107,7 +109,7 @@ class CreateWallet extends Component {
       confirmPassword
     }
 
-    if (!hasSaveMnemonics && !generatedWallet && !this.state.arrivedToLastSteps) {
+    if (!hasSaveMnemonics && !generatedWallet && !this.state.arrivedToLastSteps || this.props.stores.clientStore.type ) {
       return (
         <Row>
           <Col style={styles.noWalletDiv}>
@@ -117,14 +119,17 @@ class CreateWallet extends Component {
           </Col>
         </Row>
       )
-    } else if (generatedWallet && !this.state.copied && !this.state.arrivedToLastSteps) {
+    } else if (generatedWallet && !this.state.copied && !this.state.arrivedToLastSteps
+      && this.props.stores.clientStore.type !== 'encrypted'
+    ) {
+      console.log(generatedWallet)
       return (
         <Row>
           <Col style={styles.noWalletDiv}>
             <InputGroup style={{ width: '70%' }} >
-              <Input value={generatedWallet.wallet.mnemonic} disabled />
+              <Input value={generatedWallet.mnemonic} disabled />
               <InputGroupAddon addonType="append">
-                <CopyToClipboard text={generatedWallet.wallet.mnemonic} onCopy={this.copy}>
+                <CopyToClipboard text={generatedWallet.mnemonic} onCopy={this.copy}>
                   <Button style={styles.clip}>Copy</Button>
                 </CopyToClipboard>
               </InputGroupAddon>

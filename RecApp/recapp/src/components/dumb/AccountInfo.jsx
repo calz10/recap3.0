@@ -59,6 +59,18 @@ const AccountInfo = (props) => (
           </Row>
         </Col>
       </Row>
+      <Row style={{paddingTop: '4px'}}>
+        <Col>
+          <Row>
+            <Col md={4}>
+              <h6>File</h6>
+            </Col>
+            <Col md={8}>
+              <Button onClick={props.openModal}>Wallet To JSON</Button>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
     </Col>
   </Row>
 )

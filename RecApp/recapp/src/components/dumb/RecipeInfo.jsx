@@ -27,8 +27,8 @@ const RecipeItem = (props) => {
           </CardLink>
         }
         <CardLink href="#">
-          {(props.isAllowed)?
-            <Button color="primary">
+          {(owner||props.isAllowed)?
+            <Button color="primary" onClick={() => props.viewRecipe(props.recipe)}>
               View Recipe
             </Button> :
             <Button onClick={() => props.buyRecipe(props.index)} color="primary">
