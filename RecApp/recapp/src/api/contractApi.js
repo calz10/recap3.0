@@ -22,10 +22,10 @@ export class ContractAPI {
     return contract.getSpecificIndexRecipe(index)
   }
 
-  // string hash, string recipeType, string origin, uint amount
   static async addRecipe(wallet, data) {
     const contract = new ContractAPI().getSetterContract(wallet)
     const { ipfsHash, type, origin, amount } = data
     return await contract.addRecipe(ipfsHash, type, origin, amount)
   }
 }
+

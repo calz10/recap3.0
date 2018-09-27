@@ -108,7 +108,7 @@ class Navigator extends Component {
                   <Link style={styles.linkItem} to="/dashboard">Dashboard</Link>
                 </NavItem>
               }
-              {authStore.isAuthenticated &&
+              {authStore.isAuthenticated && wallet &&
                 <NavItem style={styles.navItem}>
                   <Link style={styles.linkItem} to="/upload-recipe">Upload Recipe</Link>
                 </NavItem>
