@@ -48,6 +48,8 @@
     "react-copy-to-clipboard": "^5.0.1",
     "react-dev-utils": "^5.0.2",
     "react-dom": "^16.5.2",
+    "react-loading": "^2.0.3",
+    "react-password-mask": "^3.3.1",
     "react-router-dom": "^4.3.1",
     "react-stepzilla": "^4.7.2",
     "reactstrap": "^6.4.0",

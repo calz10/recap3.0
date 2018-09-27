@@ -66,8 +66,8 @@ class AuthenticationStore {
       throw new Error('Mismatch password')
     }
     if (currentWallet) {
-      const { wallet } = currentWallet
-      const encryptedMnemonic = helpers.encryptToSecure(wallet.mnemonic, password).toString()
+      // const { wallet } = currentWallet
+      const encryptedMnemonic = helpers.encryptToSecure(currentWallet.mnemonic, password).toString()
       try {
         await this.authApi.updateUserData(this.currentUser.id, { encryptedMnemonic, savedMnemonic: true })
         this.currentUser = { ...this.currentUser, savedMnemonic: true }

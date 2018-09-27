@@ -5,6 +5,7 @@ import {
 import * as Api from '../api'
 import { ethers, provider } from '../api/ethersApi'
 import { abi, address } from '../helpers/config'
+import axios from 'axios'
 
 const ContractApi = Api.ContractAPI
 const Operator = Api.OperatorIPFS
@@ -20,6 +21,10 @@ class RecipeStore {
   @observable currentUser = null
   @observable matchPasswords = false
   @observable authenticating = false
+  @observable contractBalance = 0
+  @observable hasRetrieved = false
+  @observable data = []
+  @observable transactionOnProgress = false
 
   constructor(root) {
     this.rootStore = root
@@ -43,12 +48,24 @@ class RecipeStore {
     // console.log(data, wallet, 'testeste')
     const contract = new ethers.Contract(address, abi, ethersWallet)
     const { ipfsHash, type, origin, amount } = data
-    return await contract.addRecipe(ipfsHash, type, origin, amount)
+    const result =  await contract.addRecipe(ipfsHash, type, origin, amount)
+    await this.rootStore.retrieveTransactionStatus(result.hash, 'Adding Recipe Success')
   }
 
   @action async removeRecipe(index) {
-    const contract = await this.getContractSetter()
-    return await contract.deleteIndex(index)
+    try {
+      this.removeData(index)
+      const contract = await this.getContractSetter()
+      this.rootStore.changeTransactionProgress()
+      const result =  await contract.deleteIndex(index)
+      await this.rootStore.retrieveTransactionStatus(result.hash, 'Successfuly removed Recipe')
+    } catch (error) {
+      return error
+    }
+  }
+
+  @action removeData(index) {
+    this.data = this.data.filter((val,i) => i !== index)
   }
 
   @action async buySubscription(index) {
@@ -73,8 +90,13 @@ class RecipeStore {
     return await Operator.uploadFile(item)
   }
 
-  @action async cat(item) {
-    return await Api.ipfs.cat('QmXrczi9fJhcmop4uWhKqXmfzba3MGrFw2TWXWoyQe95kY')
+  @action async viewContractWalletBalance() {
+    const contract = await this.getContractSetter()
+    const balance = await contract.getBalance()
+    const ethAmount = ethers.utils.formatEther(balance)
+    console.log(ethAmount, 'tekllkjjkfdjklljk')
+    this.contractBalance = ethAmount
+    return this.contractBalance
   }
 
   @action async isAllowedToViewPayableRecipe(index) {
@@ -87,6 +109,34 @@ class RecipeStore {
     const wallet = this.rootStore.clientStore.wallet
     const contract = setterContract(wallet)
     return contract
+  }
+
+  @action async getData() {
+    try {
+      const count = await this.getRecipeCount()
+      const number = count.toNumber()
+      const data = []
+      for (let index = 0; index < number; index++) {
+        const [owner, ipfsHash, recipeType, timeCreated, origin, amount] = await this.getRecipeAtIndex(index)
+        let isAllowed = false
+        if (recipeType === 'payable' && this.rootStore.clientStore.wallet) {
+          isAllowed = await this.isAllowedToViewPayableRecipe(index)
+        }
+
+        if(recipeType === 'free') {
+          isAllowed = true
+        }
+        const ipfsObject = await axios.get(`https://gateway.ipfs.io/ipfs/${ipfsHash}`)
+        const ethAmount = ethers.utils.formatEther(amount)
+        const value = { owner, ipfsHash, isAllowed, recipeType, timeCreated: timeCreated.toNumber(), ethAmount, origin, ...ipfsObject.data }
+        data.push(value)
+        console.log('hihi?',value)
+      }
+      this.hasRetrieved = true
+      this.data = data
+    } catch (error) {
+      return new Error('Error message')
+    }
   }
 }
 // deleteIndex
