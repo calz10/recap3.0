@@ -4,30 +4,33 @@ import {
   Card, CardImg, CardText, CardBody, CardLink,
   CardTitle, CardSubtitle, Row, Button
 } from 'reactstrap';
+
+
 const RecipeItem = (props) => {
   const address = props.userAddress
   const trimDescription = props.description.substring(0, 50)
+  const owner = props.owner === address
   return (
     <Card>
       <CardBody>
         <img style={{ width: '300px' }} src={`https://gateway.ipfs.io/ipfs/${props.imageHash}`} alt="Card image cap" />
-        <CardTitle>{props.title}</CardTitle>
+        <CardTitle>{props.title}</CardTitle><p>value: {props.amount} eth</p>
         <CardSubtitle>{trimDescription}</CardSubtitle>
       </CardBody>
       <CardBody>
-        {props.owner === address &&
+        {owner &&
           <CardLink href="#">
-            <Button color="danger">
+            <Button color="danger" onClick={() => props.removeRecipe(props.index)}>
               Delete Recipe
             </Button>
           </CardLink>
         }
         <CardLink href="#">
-          {props.recipeType === 'free' ?
+          {props.recipeType === 'free' || owner ?
             <Button color="primary">
-              View Free Recipe
+              View Recipe
             </Button> :
-            <Button color="primary">
+            <Button onClick={() => props.buyRecipe(props.index)} color="primary">
               Buy to view full
             </Button>
           }

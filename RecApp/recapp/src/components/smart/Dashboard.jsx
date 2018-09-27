@@ -5,6 +5,7 @@ import { firebase } from '../../firebase'
 import axios from 'axios'
 import Modal from '../dumb/Modal'
 import RecipeItem from '../dumb/RecipeInfo'
+import ethers from 'ethers'
 
 const styles = {
   recipeItem: {
@@ -20,6 +21,8 @@ class Dashboard extends Component {
     this.test = this.test.bind(this)
     this.getData = this.getData.bind(this)
     this.toggle = this.toggle.bind(this);
+    this.removeRecipe = this.removeRecipe.bind(this)
+    this.buyRecipe = this.buyRecipe.bind(this)
   }
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -40,41 +43,72 @@ class Dashboard extends Component {
 
   async test() {
     const count = await this.props.stores.recipeStore.getRecipeCount()
-    console.log(count.toNumber(), 'test')
     this.setState({ count: count.toNumber() })
-    // this.setState({ count })
   }
+
+
   async getData() {
     try {
       const count = await this.props.stores.recipeStore.getRecipeCount()
       let data = []
       const number = count.toNumber()
       for (let index = 0; index < number; index++) {
-        const [owner, ipfsHash, recipeType, timeCreated, origin] = await this.props.stores.recipeStore.getRecipeAtIndex(index)
+        const [owner, ipfsHash, recipeType, timeCreated, origin, amount] = await this.props.stores.recipeStore.getRecipeAtIndex(index)
+        // let isAllowed = true
+        // if (recipeType === 'payable') {
+        //   isAllowed = await this.props.stores.recipeStore.isAllowedToViewPayableRecipe(index)
+        // }
         const ipfsObject = await axios.get(`https://gateway.ipfs.io/ipfs/${ipfsHash}`)
-        const value = { owner, ipfsHash, recipeType, timeCreated: timeCreated.toNumber(), origin, ...ipfsObject.data }
+        const ethAmount = ethers.utils.formatEther(amount)
+        const value = { owner, ipfsHash, recipeType, timeCreated: timeCreated.toNumber(), ethAmount, origin, ...ipfsObject.data }
         data.push(value)
       }
       this.setState({ data })
     } catch (error) {
       return new Error
     }
-
   }
+
+  async removeRecipe(index) {
+    const result = await this.props.stores.recipeStore.removeRecipe(index)
+    if (result) {
+      const data = this.state.data.filter((item, i) => i !== index)
+      this.setState({ data })
+    }
+  }
+
+  async buyRecipe(index) {
+    try {
+      const isAllowed = await this.props.stores.recipeStore.isAllowedToViewPayableRecipe(index)
+      if (!isAllowed) {
+
+      }
+      console.log(isAllowed)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
   getRecipes() {
     const userWallet = this.props.stores.clientStore.wallet
-    console.log(userWallet, 'test')
     if (this.state.data.length) {
-      return this.state.data.map((item) => {
+      return this.state.data.map((item, i) => {
         return (
-          <Col md={4} style={styles.recipeItem}>
+          <Col md={4} style={styles.recipeItem} key={i}>
             <RecipeItem
               imageHash={item.imageHash}
+              amount={item.ethAmount}
               title={item.title}
               description={item.description}
               recipeType={item.recipeType}
-              owner = {item.owner}
-              userAddress = {userWallet ? userWallet.address: '0x'}
+              isAllowed={item.isAllowed}
+              owner={item.owner}
+              removeRecipe={this.removeRecipe}
+              index={i}
+              hasWallet={userWallet ? true : false}
+              buyRecipe={this.buyRecipe}
+              userAddress={userWallet ? userWallet.address : '0x'}
             />
           </Col>
         )
@@ -82,18 +116,17 @@ class Dashboard extends Component {
     }
     return null
   }
+
   render() {
-
-
     return (
       <Container>
         <Row style={{ width: '100%', padding: '2%' }}>
           <Col md={6} sm={12}>
             <h5>Available Recipes</h5>
           </Col>
-          <Col md={6}  sm={12} style={{display: 'flex', alignItems:'flex-end', justifyContent:'flex-end'}}>
-            <Dropdown  isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-              <DropdownToggle style={{backgroundColor:'#FFE0B2' ,color: 'black',border: '1px solid #FB8C00'}}  caret>
+          <Col md={6} sm={12} style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+              <DropdownToggle style={{ backgroundColor: '#FFE0B2', color: 'black', border: '1px solid #FB8C00' }} caret>
                 Filter By Country
               </DropdownToggle>
               <DropdownMenu >
