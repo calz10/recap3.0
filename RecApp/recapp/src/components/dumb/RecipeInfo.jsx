@@ -10,10 +10,11 @@ const RecipeItem = (props) => {
   const address = props.userAddress
   const trimDescription = props.description.substring(0, 50)
   const owner = props.owner === address
+  console.log(props.isAllowed, props.index)
   return (
     <Card>
       <CardBody>
-        <img style={{ width: '300px' }} src={`https://gateway.ipfs.io/ipfs/${props.imageHash}`} alt="Card image cap" />
+        <img style={{ width: '300px', height: '400px' }} src={`https://gateway.ipfs.io/ipfs/${props.imageHash}`} alt="Card image cap" />
         <CardTitle>{props.title}</CardTitle><p>value: {props.amount} eth</p>
         <CardSubtitle>{trimDescription}</CardSubtitle>
       </CardBody>
@@ -26,7 +27,7 @@ const RecipeItem = (props) => {
           </CardLink>
         }
         <CardLink href="#">
-          {props.recipeType === 'free' || owner ?
+          {(props.isAllowed)?
             <Button color="primary">
               View Recipe
             </Button> :

@@ -41,6 +41,10 @@ class Dashboard extends Component {
     }));
   }
 
+  // async buyItem(index) {
+  //   console.log(book)
+  // }
+
   async test() {
     const count = await this.props.stores.recipeStore.getRecipeCount()
     this.setState({ count: count.toNumber() })
@@ -54,18 +58,23 @@ class Dashboard extends Component {
       const number = count.toNumber()
       for (let index = 0; index < number; index++) {
         const [owner, ipfsHash, recipeType, timeCreated, origin, amount] = await this.props.stores.recipeStore.getRecipeAtIndex(index)
-        // let isAllowed = true
-        // if (recipeType === 'payable') {
-        //   isAllowed = await this.props.stores.recipeStore.isAllowedToViewPayableRecipe(index)
-        // }
+        let isAllowed = false
+        if (recipeType === 'payable' && this.props.stores.clientStore.wallet) {
+          isAllowed = await this.props.stores.recipeStore.isAllowedToViewPayableRecipe(index)
+        }
+
+        if(recipeType === 'free') {
+          isAllowed = true
+        }
         const ipfsObject = await axios.get(`https://gateway.ipfs.io/ipfs/${ipfsHash}`)
         const ethAmount = ethers.utils.formatEther(amount)
-        const value = { owner, ipfsHash, recipeType, timeCreated: timeCreated.toNumber(), ethAmount, origin, ...ipfsObject.data }
+        const value = { owner, ipfsHash, isAllowed, recipeType, timeCreated: timeCreated.toNumber(), ethAmount, origin, ...ipfsObject.data }
+        // console.log(isAllowed, 'this is test', recipeType, index)
         data.push(value)
       }
       this.setState({ data })
     } catch (error) {
-      return new Error
+      return new Error('Error message')
     }
   }
 
@@ -81,7 +90,8 @@ class Dashboard extends Component {
     try {
       const isAllowed = await this.props.stores.recipeStore.isAllowedToViewPayableRecipe(index)
       if (!isAllowed) {
-
+        const book = await this.props.stores.recipeStore.buyRecipe(index)
+        console.log(book)
       }
       console.log(isAllowed)
     } catch (error) {
@@ -106,6 +116,7 @@ class Dashboard extends Component {
               owner={item.owner}
               removeRecipe={this.removeRecipe}
               index={i}
+              buy={this.buyRecipe}
               hasWallet={userWallet ? true : false}
               buyRecipe={this.buyRecipe}
               userAddress={userWallet ? userWallet.address : '0x'}

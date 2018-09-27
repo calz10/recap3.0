@@ -60,6 +60,15 @@ class RecipeStore {
     return await ContractApi.getSpecificIndexRecipe(index)
   }
 
+  @action async buyRecipe(index) {
+    // return await ContractApi.getSpecificIndexRecipe(index)
+    const contract = await this.getContractSetter()
+    var overrideOptions = {
+      value: ethers.utils.parseEther('2.0')
+    };
+    return await contract.buySubscription(index,overrideOptions)
+  }
+
   @action async upload(item) {
     return await Operator.uploadFile(item)
   }
