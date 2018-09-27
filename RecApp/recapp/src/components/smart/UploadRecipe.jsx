@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Container, Row, Button, FormGroup, Label, Input, } from 'reactstrap'
 import AddRecipe from '../dumb/AddRecipe'
+import axios from 'axios'
 import { inject, observer } from 'mobx-react'
 
 @inject('stores')
@@ -53,13 +54,16 @@ class UploadRecipe extends Component {
       const objectJson = JSON.stringify(recipe)
       const buff = await Buffer.from(objectJson)
       const ipfsHash = await this.props.stores.recipeStore.upload(buff)
+      const ipAdd = await axios.get('https://api.ipify.org/?format=json')
+      const countryLocJSON = await axios(`http://api.ipstack.com/${ipAdd.data.ip}?access_key=dd049aa038290dd1e67d0825ad81ce67`)
       const data = {
         ipfsHash,
-        type: 'free',
-        origin: 'Philippines',
-        amount: 1
+        type: 'payable',
+        origin: countryLocJSON.data.country_name,
+        amount: 2
       }
       const uploaded = await this.props.stores.recipeStore.addRecipe(data)
+      console.log(uploaded)
     } catch (error) {
       throw new Error('Error in Uploading')
     }

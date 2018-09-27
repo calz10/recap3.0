@@ -9,6 +9,12 @@ import { abi, address } from '../helpers/config'
 const ContractApi = Api.ContractAPI
 const Operator = Api.OperatorIPFS
 
+const setterContract = (wallet) => {
+  const ethersWallet = new ethers.Wallet(wallet.privateKey, provider)
+  const contract = new ethers.Contract(address, abi, ethersWallet)
+  return contract
+}
+
 class RecipeStore {
   @observable isAuthenticated = false
   @observable currentUser = null
@@ -31,13 +37,23 @@ class RecipeStore {
   }
 
   @action async addRecipe(data) {
-  // string hash, string recipeType, string origin, uint amount
-      const wallet = this.rootStore.clientStore.wallet
-      const ethersWallet = new ethers.Wallet(wallet.privateKey, provider)
-      // console.log(data, wallet, 'testeste')
-      const contract = new ethers.Contract(address, abi, ethersWallet)
-      const { ipfsHash, type, origin, amount } = data
-      return await contract.addRecipe(ipfsHash, type, origin, amount)
+    // string hash, string recipeType, string origin, uint amount
+    const wallet = this.rootStore.clientStore.wallet
+    const ethersWallet = new ethers.Wallet(wallet.privateKey, provider)
+    // console.log(data, wallet, 'testeste')
+    const contract = new ethers.Contract(address, abi, ethersWallet)
+    const { ipfsHash, type, origin, amount } = data
+    return await contract.addRecipe(ipfsHash, type, origin, amount)
+  }
+
+  @action async removeRecipe(index) {
+    const contract = await this.getContractSetter()
+    return await contract.deleteIndex(index)
+  }
+
+  @action async buySubscription(index) {
+    const contract = await this.getContractSetter()
+    return await contract.buySubscription(index)
   }
 
   @action async getRecipeAtIndex(index) {
@@ -51,6 +67,19 @@ class RecipeStore {
   @action async cat(item) {
     return await Api.ipfs.cat('QmXrczi9fJhcmop4uWhKqXmfzba3MGrFw2TWXWoyQe95kY')
   }
+
+  @action async isAllowedToViewPayableRecipe(index) {
+    const contract = await this.getContractSetter()
+    const isAllowed = await contract.isAllowedToView(index)
+    return isAllowed
+  }
+
+  @action async getContractSetter() {
+    const wallet = this.rootStore.clientStore.wallet
+    const contract = setterContract(wallet)
+    return contract
+  }
 }
+// deleteIndex
 
 export default RecipeStore
