@@ -36,9 +36,9 @@ class Dashboard extends Component {
     if (this.props.stores.recipeStore.wallet) {
       this.props.stores.recipeStore.viewContractWalletBalance()
     }
-    if (!this.props.stores.recipeStore.hasRetrieved) {
+    // if (!this.props.stores.recipeStore.hasRetrieved) {
       await this.props.stores.recipeStore.getData()
-    }
+    // }
   }
 
   toggle() {
@@ -109,13 +109,15 @@ class Dashboard extends Component {
     }
     return null
   }
-
+  
   render() {
     return (
       <Container>
         <Row style={{ width: '100%', padding: '2%' }}>
           <Col md={6} sm={12}>
             <h5>Available Recipes</h5>
+            <h4>Pending Balance:{this.props.stores.recipeStore.contractBalance} eth</h4>
+            <Button onClick={() => this.props.stores.recipeStore.cashOut()}>Withdraw</Button>
           </Col>
           <Col md={6} sm={12} style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
             <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
@@ -137,6 +139,7 @@ class Dashboard extends Component {
             }
           </Row>
         }
+
       </Container>
     );
   }

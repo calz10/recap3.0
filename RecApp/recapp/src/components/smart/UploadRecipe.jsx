@@ -3,6 +3,7 @@ import { Container, Row, Button, FormGroup, Label, Input, } from 'reactstrap'
 import AddRecipe from '../dumb/AddRecipe'
 import axios from 'axios'
 import { inject, observer } from 'mobx-react'
+import ethers from 'ethers'
 
 @inject('stores')
 @observer
@@ -19,10 +20,8 @@ class UploadRecipe extends Component {
 
   componentDidMount() {
     const { clientStore } = this.props.stores
-    console.log(clientStore.wallet)
   }
-
-
+  
   async captureFile(event) {
     const file = event.target.files[0]
     let reader = new FileReader()
@@ -42,7 +41,7 @@ class UploadRecipe extends Component {
   async convertToBuffer(reader) {
     return await Buffer.from(reader.result)
   }
-  // QmXrczi9fJhcmop4uWhKqXmfzba3MGrFw2TWXWoyQe95kY
+
   async uploadFile() {
     try {
       const imageHash = await this.props.stores.recipeStore.upload(this.state.buffer)
@@ -60,7 +59,7 @@ class UploadRecipe extends Component {
         ipfsHash,
         type: 'payable',
         origin: countryLocJSON.data.country_name,
-        amount: 2
+        amount: ethers.utils.parseEther('3.0')
       }
       const uploaded = await this.props.stores.recipeStore.addRecipe(data)
       console.log(uploaded)

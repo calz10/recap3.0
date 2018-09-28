@@ -38,7 +38,6 @@ class Home extends Component {
     const { clientStore } = this.props.stores
     try {
       await clientStore.loadWalletFromMnemonic(defaultMnemonic)
-      console.log(clientStore.currentWalletBalance, 'updated test')
     } catch (error) {
       return error
     }
@@ -64,7 +63,7 @@ class Home extends Component {
             login={this.login}
           />
         </div>
-        {/* <Button onClick={()=> this.openFromMnemonic()}> tes</Button> */}
+        {/* <Button onClick={()=> this.props.stores.recipeStore.viewContractWalletBalance()}> tes</Button> */}
       </div>
     );
   }
