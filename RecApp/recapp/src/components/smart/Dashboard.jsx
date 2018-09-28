@@ -36,9 +36,7 @@ class Dashboard extends Component {
     if (this.props.stores.recipeStore.wallet) {
       this.props.stores.recipeStore.viewContractWalletBalance()
     }
-    // if (!this.props.stores.recipeStore.hasRetrieved) {
-      await this.props.stores.recipeStore.getData()
-    // }
+    await this.props.stores.recipeStore.getData()
   }
 
   toggle() {
@@ -66,11 +64,12 @@ class Dashboard extends Component {
     }
   }
 
-  async buyRecipe(index) {
+  async buyRecipe(index, price) {
     try {
       const isAllowed = await this.props.stores.recipeStore.isAllowedToViewPayableRecipe(index)
-      if (!isAllowed) {
-        const book = await this.props.stores.recipeStore.buyRecipe(index)
+      const balance = this.props.stores.clientStore.currentWalletBalance
+      if (!isAllowed && (balance >= price)) {
+        const book = await this.props.stores.recipeStore.buyRecipe(index, price)
         console.log(book)
       }
       console.log(isAllowed)
@@ -78,46 +77,57 @@ class Dashboard extends Component {
       console.log(error)
     }
   }
+  filterCountry(event) {
+    const id = event.target.id
+    const data = this.props.stores.recipeStore.filterOrigin(id)
+    this.setState({ data })
+  }
 
 
   getRecipes() {
     const userWallet = this.props.stores.clientStore.wallet
     if (this.props.stores.recipeStore.data.length) {
       return this.props.stores.recipeStore.data.map((item, i) => {
-        return (
-          <Col md={4} style={styles.recipeItem} key={i}>
-            <RecipeItem
-              imageHash={item.imageHash}
-              amount={item.ethAmount}
-              title={item.title}
-              description={item.description}
-              recipeType={item.recipeType}
-              isAllowed={item.isAllowed}
-              owner={item.owner}
-              removeRecipe={this.removeRecipe}
-              index={i}
-              buy={this.buyRecipe}
-              hasWallet={userWallet ? true : false}
-              buyRecipe={this.buyRecipe}
-              recipe={item}
-              viewRecipe={this.viewRecipe}
-              userAddress={userWallet ? userWallet.address : '0x'}
-            />
-          </Col>
-        )
+        if (item.description) {
+          return (
+            <Col md={4} style={styles.recipeItem} key={i}>
+              <RecipeItem
+                imageHash={item.imageHash}
+                amount={item.ethAmount}
+                title={item.title}
+                description={item.description}
+                recipeType={item.recipeType}
+                isAllowed={item.isAllowed}
+                owner={item.owner}
+                removeRecipe={this.removeRecipe}
+                index={i}
+                buy={this.buyRecipe}
+                hasWallet={userWallet ? true : false}
+                buyRecipe={this.buyRecipe}
+                recipe={item}
+                viewRecipe={this.viewRecipe}
+                userAddress={userWallet ? userWallet.address : '0x'}
+              />
+            </Col>
+          )
+        }
       })
     }
     return null
   }
-  
+
   render() {
     return (
       <Container>
         <Row style={{ width: '100%', padding: '2%' }}>
           <Col md={6} sm={12}>
             <h5>Available Recipes</h5>
-            <h4>Pending Balance:{this.props.stores.recipeStore.contractBalance} eth</h4>
-            <Button onClick={() => this.props.stores.recipeStore.cashOut()}>Withdraw</Button>
+            {this.props.stores.clientStore.wallet &&
+              <div>
+                <h4>Pending Balance:{this.props.stores.recipeStore.contractBalance} eth</h4>
+                <Button onClick={() => this.props.stores.recipeStore.cashOut()}>Withdraw</Button>
+              </div>
+            }
           </Col>
           <Col md={6} sm={12} style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
             <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
@@ -139,7 +149,6 @@ class Dashboard extends Component {
             }
           </Row>
         }
-
       </Container>
     );
   }

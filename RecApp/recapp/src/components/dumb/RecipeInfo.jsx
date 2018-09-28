@@ -31,7 +31,7 @@ const RecipeItem = (props) => {
             <Button color="primary" onClick={() => props.viewRecipe(props.recipe)}>
               View Recipe
             </Button> :
-            <Button onClick={() => props.buyRecipe(props.index)} color="primary">
+            <Button onClick={() => props.buyRecipe(props.index, props.amount )} color="primary">
               Buy to view full
             </Button>
           }

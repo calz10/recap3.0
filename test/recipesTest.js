@@ -54,7 +54,7 @@ contract("Recipes", async (accounts) => {
         assert.equal(count, 5, 'count is not equal with expected count')
     })
     it('Should buy and allowed the buyer', async () => {
-        await recipeInstance.buySubscription(1, { from: accounts[3], value: 1 * ethers })
+        await recipeInstance.buySubscription(1, { from: accounts[3], value: 1})
         const allowed = await recipeInstance.isAllowedToView(1, { from: accounts[3] })
         assert.isTrue(allowed, 'test truthness')
     })

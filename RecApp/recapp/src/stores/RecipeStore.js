@@ -24,6 +24,7 @@ class RecipeStore {
   @observable contractBalance = 0
   @observable hasRetrieved = false
   @observable data = []
+  @observable origins = []
   @observable transactionOnProgress = false
 
   constructor(root) {
@@ -45,7 +46,7 @@ class RecipeStore {
     // string hash, string recipeType, string origin, uint amount
     const wallet = this.rootStore.clientStore.wallet
     const ethersWallet = new ethers.Wallet(wallet.privateKey, provider)
-    // console.log(data, wallet, 'testeste')
+    console.log(data, wallet, 'testeste')
     const contract = new ethers.Contract(address, abi, ethersWallet)
     const { ipfsHash, type, origin, amount } = data
     const result =  await contract.addRecipe(ipfsHash, type, origin, amount)
@@ -77,11 +78,11 @@ class RecipeStore {
     return await ContractApi.getSpecificIndexRecipe(index)
   }
 
-  @action async buyRecipe(index) {
+  @action async buyRecipe(index ,price ) {
     // return await ContractApi.getSpecificIndexRecipe(index)
     const contract = await this.getContractSetter()
     var overrideOptions = {
-      value: ethers.utils.parseEther('3.0')
+      value: ethers.utils.parseEther(`${price}`)
     };
     const result = await contract.buySubscription(index, overrideOptions)
     await this.rootStore.retrieveTransactionStatus(result.hash, 'Bought Recipe Successfully')
@@ -120,11 +121,16 @@ class RecipeStore {
     return contract
   }
 
+  @action filterOrigin(org) {
+    const data = this.data.filter((item) => item.origin === org)
+    return data
+  }
   @action async getData() {
     try {
       const count = await this.getRecipeCount()
       const number = count.toNumber()
       const data = []
+      let origins
       for (let index = 0; index < number; index++) {
         const [owner, ipfsHash, recipeType, timeCreated, origin, amount] = await this.getRecipeAtIndex(index)
         let isAllowed = false
@@ -138,11 +144,13 @@ class RecipeStore {
         const ipfsObject = await axios.get(`https://gateway.ipfs.io/ipfs/${ipfsHash}`)
         const ethAmount = ethers.utils.formatEther(amount)
         const value = { owner, ipfsHash, isAllowed, recipeType, timeCreated: timeCreated.toNumber(), ethAmount, origin, ...ipfsObject.data }
+
+        origins = new Set([...origins, origin])
         data.push(value)
-        console.log('hihi?',value)
       }
       this.hasRetrieved = true
       this.data = data
+      this.origins = [...origins]
     } catch (error) {
       return new Error('Error message')
     }
