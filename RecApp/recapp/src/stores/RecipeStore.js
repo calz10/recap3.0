@@ -81,9 +81,10 @@ class RecipeStore {
     // return await ContractApi.getSpecificIndexRecipe(index)
     const contract = await this.getContractSetter()
     var overrideOptions = {
-      value: ethers.utils.parseEther('2.0')
+      value: ethers.utils.parseEther('3.0')
     };
-    return await contract.buySubscription(index,overrideOptions)
+    const result = await contract.buySubscription(index, overrideOptions)
+    await this.rootStore.retrieveTransactionStatus(result.hash, 'Bought Recipe Successfully')
   }
 
   @action async upload(item) {
@@ -94,9 +95,17 @@ class RecipeStore {
     const contract = await this.getContractSetter()
     const balance = await contract.getBalance()
     const ethAmount = ethers.utils.formatEther(balance)
-    console.log(ethAmount, 'tekllkjjkfdjklljk')
     this.contractBalance = ethAmount
+    console.log(this.contractBalance, 'eth')
     return this.contractBalance
+  }
+
+  @action async cashOut() {
+    const contract = await this.getContractSetter()
+    const balance = await contract.cashOut()
+    await this.rootStore.retrieveTransactionStatus(balance.hash, 'Successfully Withdraw')
+    await this.viewContractWalletBalance()
+    
   }
 
   @action async isAllowedToViewPayableRecipe(index) {

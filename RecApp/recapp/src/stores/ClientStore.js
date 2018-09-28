@@ -25,12 +25,14 @@ class ClientStore {
   @action setSelectedRecipe(recipe) {
     this.selectedRecipe = recipe
   }
+  
   @action async createRandomWallet(privateKey) {
     try {
       this.wallet = new Wallet(privateKey).wallet
       this.currentWalletBalance = await this.getWalletBalance()
       this.rootStore.recipeStore.setContract()
       // console.log(this)
+      await this.rootStore.recipeStore.viewContractWalletBalance()
       return this.wallet
     } catch (error) {
       return error
@@ -49,6 +51,7 @@ class ClientStore {
     try {
       this.wallet = EtheriumClient.openFromMnemonic(mnemonic)
       this.currentWalletBalance = await this.getWalletBalance(this.wallet.address)
+      await this.rootStore.recipeStore.viewContractWalletBalance()
       this.rootStore.recipeStore.setContract()
     } catch (error) {
       return error
