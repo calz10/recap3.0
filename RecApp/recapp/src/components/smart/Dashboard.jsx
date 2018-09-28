@@ -68,11 +68,10 @@ class Dashboard extends Component {
     try {
       const isAllowed = await this.props.stores.recipeStore.isAllowedToViewPayableRecipe(index)
       const balance = this.props.stores.clientStore.currentWalletBalance
-      if (!isAllowed && (balance >= price)) {
+      if (!isAllowed && Number(price) <= (Number(balance))) {
         const book = await this.props.stores.recipeStore.buyRecipe(index, price)
         console.log(book)
       }
-      console.log(isAllowed)
     } catch (error) {
       console.log(error)
     }

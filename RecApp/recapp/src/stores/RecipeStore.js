@@ -144,13 +144,12 @@ class RecipeStore {
         const ipfsObject = await axios.get(`https://gateway.ipfs.io/ipfs/${ipfsHash}`)
         const ethAmount = ethers.utils.formatEther(amount)
         const value = { owner, ipfsHash, isAllowed, recipeType, timeCreated: timeCreated.toNumber(), ethAmount, origin, ...ipfsObject.data }
-
-        origins = new Set([...origins, origin])
+        console.log(value)
+        // origins = new Set([...origins, origin])
         data.push(value)
       }
       this.hasRetrieved = true
       this.data = data
-      this.origins = [...origins]
     } catch (error) {
       return new Error('Error message')
     }

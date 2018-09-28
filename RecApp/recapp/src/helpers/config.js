@@ -203,6 +203,20 @@ export const abi = [
 	},
 	{
 		"constant": true,
+		"inputs": [],
+		"name": "getUserTransactionsLength",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
 		"inputs": [
 			{
 				"name": "recipeIndex",
@@ -221,4 +235,4 @@ export const abi = [
 		"type": "function"
 	}
 ]
-export const address = '0x396663fc6bbb1181159c09e769e0165e45b71a07'
+export const address = '0xd8e3db3f768ca9a7c08bebcb2002f23fb05afb84'
