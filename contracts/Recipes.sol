@@ -46,7 +46,7 @@ contract Recipes {
         recipe.recipeType = recipeType;
         recipe.origin = origin;
         recipe.timeCreated = now;
-        recipe.etherAmount = amount * (10 ** 18);
+        recipe.etherAmount = amount;
         recipe.allowedToView[msg.sender] = true;
         recipes[recipeIndexes.length] = recipe;
         recipeIndexes.push(recipeIndexes.length);

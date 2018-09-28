@@ -1,4 +1,4 @@
-export const abi =[
+export const abi = [
 	{
 		"constant": false,
 		"inputs": [
@@ -221,5 +221,4 @@ export const abi =[
 		"type": "function"
 	}
 ]
-
-export const address = '0xc7b4e34e519f9074b131d7cdbfac32a19ead5b93'
+export const address = '0xda2358f33de8e3ec6c26af59e334d35ee1b48fbe'
